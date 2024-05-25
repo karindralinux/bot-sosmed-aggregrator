@@ -53,9 +53,10 @@ const bot = new Telegraf(BOT_TOKEN);
 
 async function initCacheDb() {
     const query = cacheDb.query(`CREATE TABLE users (
-        telegram_user_id VARCHAR(255),
-        username VARCHAR(255),
-        state TINYINT DEFAULT 0
+        telegram_user_id VARCHAR(255) NOT NULL,
+        username VARCHAR(255) NOT NULL,
+        state TINYINT DEFAULT 0,
+        thing_type VARCHAR(255)
     );`);
 
     query.run();
@@ -85,7 +86,7 @@ async function main() {
         }
 
         // TODO : lengkapi command-command yang valid
-        const validCommands = ["halo", "mulai", "pilih-menu", "konfirmasi", "tes"];
+        const validCommands = ["halo", "mulai", "pilih-menu", "konfirmasi", "tes", "KTP", "SIM", "STNK"];
 
         if (ctx.updateType === "message") {
             const command = getCommandName(ctx);
