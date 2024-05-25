@@ -15,11 +15,18 @@ export function register(bot: Telegraf, cache: Database) {
 
             setThingTypeUser(cache, userId, thingType)
 
-            ctx.reply(`Baik, kamu cari ${thingType} ya`, {
+            await ctx.reply(`Baik, kamu cari ${thingType} ya. _Menyiapkan template..._`, {
                 reply_markup: {
                     remove_keyboard: true,
-                }
+                },
+                parse_mode: 'Markdown'
             })
+
+            await ctx.telegram.sendMessage(userId, `
+                *Nama :* \n*Lokasi Terakhir :* \n*Rentang Waktu Hilang :* \n
+            `, {
+                parse_mode: 'Markdown'
+            });
         }
     })
 

@@ -79,20 +79,19 @@ async function main() {
     bot.use((ctx, next) => {
 
         const senderUserId: string = ctx.message?.from.id.toString() || '';
-        const senderUsername: string = ctx.message?.from.username?.toString() || ''
+        const senderUsername: string = ctx.message?.from.username?.toString() || '';
 
         if (ctx.from?.is_bot) {
             return;
         }
 
         // TODO : lengkapi command-command yang valid
-        const validCommands = ["halo", "mulai", "pilih-menu", "konfirmasi", "tes", "KTP", "SIM", "STNK"];
+        const validCommands = ["halo", "mulai", "pilih-menu", "konfirmasi", "tes"];
 
         if (ctx.updateType === "message") {
             const command = getCommandName(ctx);
 
             if (command === "" || !validCommands.includes(command)) {
-                ctx.reply("Maaf, pesan anda tidak kami kenali");
                 next();
                 return;
             }
