@@ -1,0 +1,21 @@
+{
+  "name": "pencari-barang-sosmed-aggregrator",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch run index.ts",
+    "build": "bun build ./index.ts --outdir ./dist"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.43.1",
+    "playwright-extra": "^4.3.6",
+    "telegraf": "^4.16.3",
+    "tesseract.js": "^5.0.5"
+  }
+}
