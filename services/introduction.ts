@@ -1,6 +1,6 @@
-import type { Context, Telegraf } from "telegraf";
+import { Markup, type Context, type Telegraf } from "telegraf";
 import { Database } from "bun:sqlite";
-import { getStateUser } from "../helpers/cache";
+import { getStateUser, setThingTypeUser } from "../helpers/cache";
 
 export function register(bot: Telegraf, cache: Database) {
 
@@ -20,17 +20,24 @@ export function register(bot: Telegraf, cache: Database) {
             parse_mode: 'Markdown',
             reply_markup: {
                 resize_keyboard: true,
-                keyboard: [
+                // keyboard: [
+                //     [
+                //         {
+                //             text: 'KTP'
+                //         },
+                //         {
+                //             text: 'SIM'
+                //         },
+                //         {
+                //             text: 'STNK'
+                //         }
+                //     ]
+                // ]
+                inline_keyboard: [
                     [
-                        {
-                            text: 'KTP'
-                        },
-                        {
-                            text: 'SIM'
-                        },
-                        {
-                            text: 'STNK'
-                        }
+                        {text: 'SIM', callback_data: 'SIM'},
+                        {text: 'KTP', callback_data: 'KTP'},
+                        {text: 'STNK', callback_data: 'STNK'}
                     ]
                 ]
             }
