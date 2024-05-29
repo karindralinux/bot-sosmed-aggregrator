@@ -29,9 +29,19 @@ async function handleThing(ctx: Context, cache: Database) {
         })
 
         await ctx.telegram.sendMessage(userId, `
-            *Nama :* \n*Lokasi Terakhir :* \n*Rentang Waktu Hilang :* \n
+            *Nama Lengkap:* \n*Lokasi Terakhir :* \n*Rentang Waktu Hilang(dd/mm/yyyy) :* \n
         `, {
             parse_mode: 'Markdown'
         });
+
+        await ctx.telegram.sendMessage(userId, `
+            *Contoh Pengisian* \n\n*Nama Lengkap:* Jhon Doe \n*Lokasi Terakhir :* Terminal Terboyo, Semarang \n*Waktu Hilang(dd/mm/yyyy) :* 25/05/2024 \n
+        `, {
+            parse_mode: 'Markdown'
+        });
+
+
+
+
     }
 }
