@@ -11,8 +11,8 @@ export function register(bot: Telegraf, cache: Database) {
 }
 
 async function handleThing(ctx: Context, cache: Database) {
-    const message: any = ctx.message;
-    const thingType = message?.text || '';
+    const message: any = ctx.update;
+    const thingType = message?.callback_query?.data || '';
     const userId = ctx?.from?.id.toString() || '';
 
     const { state } = getStateUser(cache, userId);
