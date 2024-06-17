@@ -1,6 +1,6 @@
 import type { Context, Telegraf } from "telegraf";
 import { Database } from "bun:sqlite";
-import { getStateUser, setThingTypeUser } from "../helpers/cache";
+import { getStateUser, setStateUser, setThingTypeUser } from "../helpers/cache";
 
 export function register(bot: Telegraf, cache: Database) {
     bot.action(["KTP", "SIM", "STNK"], async (ctx: Context) => {
@@ -40,8 +40,13 @@ async function handleThing(ctx: Context, cache: Database) {
             parse_mode: 'Markdown'
         });
 
-
-
-
+        // Update State to 1 (Waiting User Thing's Information Data)
+        setStateUser({
+            cache,
+            userId,
+            state: 1
+        });
     }
+
+
 }
