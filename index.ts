@@ -20,6 +20,8 @@ const server = Bun.serve({
         const params = new URLSearchParams(req.url);
 
         switch (url.pathname) {
+            case "/":
+                return new Response(Bun.file(import.meta.dir + "/index.html"));
             case "/facebook":
                 const scraper = new FacebookScraper("example@gmail.com", "rahasia123");
                 const data = await scraper.search({
