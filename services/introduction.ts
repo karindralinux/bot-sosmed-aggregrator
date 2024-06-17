@@ -45,10 +45,20 @@ export function register(bot: Telegraf, cache: Database) {
 
     });
 
+    bot.command("riwayat", async (ctx: Context) => {
+        await ctx.reply(`_Melihat Riwayat..._`, {
+            parse_mode: 'Markdown'
+        });
+    });
+
     return [
         {
             command: "mulai",
             description: "Mulai menggunakan Got It Bot"
+        },
+        {
+            command: "riwayat",
+            description: "Melihat riwayat pencarian sebelumnya"
         }
     ];
 
