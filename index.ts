@@ -3,10 +3,7 @@ import { FacebookScraper, QueryFacebookType } from "./scraper/facebook/scraper";
 import { getCommandName } from "./helpers/command";
 import * as introduction from "./services/introduction";
 import * as things from "./services/things";
-
-import { Database } from "bun:sqlite";
-
-const cacheDb = new Database(":memory:");
+import db from "./db/init";
 
 const PORT = Number(Bun.env.PORT) || 3000;
 const BOT_TOKEN = Bun.env.BOT_TOKEN || '';
@@ -53,20 +50,9 @@ const server = Bun.serve({
 
 const bot = new Telegraf(BOT_TOKEN);
 
-async function initCacheDb() {
-    const query = cacheDb.query(`CREATE TABLE users (
-        telegram_user_id VARCHAR(255) NOT NULL,
-        username VARCHAR(255) NOT NULL,
-        state TINYINT DEFAULT 0,
-        thing_type VARCHAR(255)
-    );`);
-
-    query.run();
-}
-
 async function terminate(signal: string) {
     bot.stop(signal);
-    cacheDb.close()
+    db.end()
     console.log(`Turn off bot...`)
     process.exit(0);
 }
@@ -76,9 +62,7 @@ process.once("SIGTERM", () => terminate("SIGTERM"));
 
 async function main() {
 
-    initCacheDb().then(() => { console.log(`Successfully Init Cache DB..`) }).catch((e) => console.error(e, `Error Init Cache DB`))
-
-    bot.use((ctx, next) => {
+    bot.use(async (ctx, next) => {
 
         const senderUserId: string = ctx.message?.from.id.toString() || '';
         const senderUsername: string = ctx.message?.from.username?.toString() || '';
@@ -98,16 +82,16 @@ async function main() {
                 return;
             }
 
-            const user = cacheDb.query("SELECT telegram_user_id,state,username FROM users WHERE $telegram_user_id;").get({
-                $telegram_user_id: senderUserId
-            });
+            const [user] = await db`SELECT telegram_user_id,state,username FROM users WHERE telegram_user_id = ${senderUserId}`
 
             if (!user) {
-                const query = cacheDb.query("INSERT INTO users (telegram_user_id, username) VALUES ($telegram_user_id, $username);")
-                query.run({
-                    $telegram_user_id: senderUserId,
-                    $username: senderUsername
-                })
+                await db`INSERT INTO users (telegram_user_id, username, remaining_usage, level) 
+                        VALUES (${senderUserId}, ${senderUsername}, 2, 'normal');`;
+            } else {
+                await db`UPDATE users SET 
+                updated_at = ${new Date().toISOString()},
+                state = 0
+                WHERE telegram_user_id = ${senderUserId};`;
             }
 
             next();
@@ -118,8 +102,8 @@ async function main() {
     })
 
     const commands = [
-        introduction.register(bot, cacheDb),
-        things.register(bot, cacheDb)
+        introduction.register(bot),
+        things.register(bot)
     ].filter((v) => Array.isArray(v)).flat();
 
     bot.telegram.setMyCommands(commands.slice(0, 100)).then(o => o).catch((e) => { console.error(e) })

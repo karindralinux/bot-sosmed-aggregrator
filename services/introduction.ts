@@ -1,14 +1,14 @@
 import { Markup, type Context, type Telegraf } from "telegraf";
 import { Database } from "bun:sqlite";
-import { getStateUser, setThingTypeUser } from "../helpers/cache";
+import { getStateUser, setThingTypeUser } from "../helpers/query";
 
-export function register(bot: Telegraf, cache: Database) {
+export function register(bot: Telegraf) {
 
     bot.command("mulai", async (ctx: Context) => {
 
         const userId = ctx.message?.from.id.toString() || '';
 
-        const { state } = getStateUser(cache, userId);
+        const state = await getStateUser({ userId });
 
         const senderChatId: number = ctx.message?.chat.id || 0;
 
