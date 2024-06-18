@@ -1,5 +1,5 @@
 import { Telegraf } from "telegraf";
-import { FacebookScraper, QueryFacebookType } from "./scraper/facebook/scraper";
+import { FacebookScraper, QueryFacebookType } from "./scraper/facebook";
 import { getCommandName } from "./helpers/command";
 import * as introduction from "./services/introduction";
 import * as things from "./services/things";
@@ -14,30 +14,15 @@ const server = Bun.serve({
     async fetch(req) {
 
         const url = new URL(req.url);
-        const params = new URLSearchParams(req.url);
 
-        switch (url.pathname) {
-            case "/":
-                return new Response(Bun.file(import.meta.dir + "/index.html"));
-            case "/facebook":
-                const scraper = new FacebookScraper("example@gmail.com", "rahasia123");
-                const data = await scraper.search({
-                    type: QueryFacebookType.GROUP, query: 'stnk', accountId: '760885718141448'
-                })
+        if (url.pathname === 'health-check') return new Response('Hello World')
 
-                return Response.json({
-                    status: true,
-                    data
-                }, { status: 200 });
+        const file = Bun.file(import.meta.dir + '/public' + (url.pathname == '/' ? '/index.html' : url.pathname))
+        const isExists = await file.exists()
 
-            case "/instagram":
-                return new Response("instagram..")
-            case "/twitter":
-                return new Response("twitter...")
-        }
+        if (!isExists) return new Response('Not Found');
 
-        return new Response("Hello World");
-
+        return new Response(file)
     },
     error(e) {
         console.error(e)
