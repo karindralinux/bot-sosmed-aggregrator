@@ -1,25 +1,25 @@
 import type { Context, Telegraf } from "telegraf";
 import { Database } from "bun:sqlite";
-import { getStateUser, setThingTypeUser } from "../helpers/cache";
+import { getStateUser, setStateUser, setThingTypeUser } from "../helpers/query";
 
-export function register(bot: Telegraf, cache: Database) {
+export function register(bot: Telegraf) {
     bot.action(["KTP", "SIM", "STNK"], async (ctx: Context) => {
-        await handleThing(ctx, cache);
+        await handleThing(ctx);
     })
 
     return []
 }
 
-async function handleThing(ctx: Context, cache: Database) {
+async function handleThing(ctx: Context) {
     const message: any = ctx.update;
     const thingType = message?.callback_query?.data || '';
     const userId = ctx?.from?.id.toString() || '';
 
-    const { state } = getStateUser(cache, userId);
+    const { state } = await getStateUser({ userId });
 
     if (state == 0) {
 
-        setThingTypeUser(cache, userId, thingType)
+        await setThingTypeUser({ userId, thingType })
 
         await ctx.reply(`Baik, kamu cari ${thingType} ya. _Menyiapkan template..._`, {
             reply_markup: {
@@ -40,8 +40,12 @@ async function handleThing(ctx: Context, cache: Database) {
             parse_mode: 'Markdown'
         });
 
-
-
-
+        // Update State to 1 (Waiting User Thing's Information Data)
+        await setStateUser({
+            userId,
+            state: 1
+        });
     }
+
+
 }
