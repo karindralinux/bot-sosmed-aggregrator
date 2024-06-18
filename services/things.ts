@@ -35,6 +35,12 @@ async function handleThing(ctx: Context) {
         });
 
         await ctx.telegram.sendMessage(userId, `
+            \nSilahkan salin pesan di atas dan masukkan ke kolom chat\nkemudian isi sesuai contoh pengisian di bawah ini \n
+        `, {
+            parse_mode: 'Markdown'
+        });
+
+        await ctx.telegram.sendMessage(userId, `
             *Contoh Pengisian* \n\n*Nama Lengkap:* Jhon Doe \n*Lokasi Terakhir :* Terminal Terboyo, Semarang \n*Waktu Hilang(dd/mm/yyyy) :* 25/05/2024 \n
         `, {
             parse_mode: 'Markdown'
