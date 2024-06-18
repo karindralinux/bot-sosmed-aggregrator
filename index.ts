@@ -1,8 +1,9 @@
 import { Telegraf } from "telegraf";
-import { FacebookScraper, QueryFacebookType } from "./scraper/facebook";
 import { getCommandName } from "./helpers/command";
 import * as introduction from "./services/introduction";
 import * as things from "./services/things";
+import * as confirmation from "./services/confirmation";
+import * as search from "./services/search";
 import db from "./db/init";
 
 const PORT = Number(Bun.env.PORT) || 3000;
@@ -88,7 +89,9 @@ async function main() {
 
     const commands = [
         introduction.register(bot),
-        things.register(bot)
+        things.register(bot),
+        confirmation.register(bot),
+        search.register(bot)
     ].filter((v) => Array.isArray(v)).flat();
 
     bot.telegram.setMyCommands(commands.slice(0, 100)).then(o => o).catch((e) => { console.error(e) })
