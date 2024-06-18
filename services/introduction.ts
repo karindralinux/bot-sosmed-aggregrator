@@ -1,4 +1,4 @@
-import { Markup, type Context, type Telegraf } from "telegraf";
+import { Markup, Context, Telegraf } from "telegraf";
 import { Database } from "bun:sqlite";
 import { getStateUser, setThingTypeUser } from "../helpers/query";
 
@@ -20,19 +20,6 @@ export function register(bot: Telegraf) {
             parse_mode: 'Markdown',
             reply_markup: {
                 resize_keyboard: true,
-                // keyboard: [
-                //     [
-                //         {
-                //             text: 'KTP'
-                //         },
-                //         {
-                //             text: 'SIM'
-                //         },
-                //         {
-                //             text: 'STNK'
-                //         }
-                //     ]
-                // ]
                 inline_keyboard: [
                     [
                         {text: 'SIM', callback_data: 'SIM'},
@@ -43,6 +30,29 @@ export function register(bot: Telegraf) {
             }
         });
 
+        await ctx.telegram.sendMessage(senderChatId, `Di platform mana anda ingin mencari barang anda?`, {
+            parse_mode: 'Markdown',
+            reply_markup: {
+                inline_keyboard: [
+                    [{ text: 'Facebook', callback_data: 'facebook' }],
+                    [{ text: 'Twitter', callback_data: 'twitter' }],
+                    [{ text: 'Instagram', callback_data: 'instagram' }]
+                ]
+            }
+        });
+
+    });
+
+    bot.action("facebook", async (ctx: Context) => {
+        await startScraping(ctx, 'facebook');
+    });
+
+    bot.action("twitter", async (ctx: Context) => {
+        await startScraping(ctx, 'twitter');
+    });
+
+    bot.action("instagram", async (ctx: Context) => {
+        await startScraping(ctx, 'instagram');
     });
 
     bot.command("riwayat", async (ctx: Context) => {
@@ -54,12 +64,49 @@ export function register(bot: Telegraf) {
     return [
         {
             command: "mulai",
-            description: "Mulai menggunakan Got It Bot"
+            description: "Memulai menggunakan Got It Bot"
         },
         {
             command: "riwayat",
             description: "Melihat riwayat pencarian sebelumnya"
         }
     ];
+}
 
+async function startScraping(ctx: Context, media: string) {
+    const userId = ctx.message?.from.id.toString() || '';
+
+    const state = await getStateUser({ userId });
+
+    
+    await setThingTypeUser({ userId, thingType: media });
+
+    await ctx.reply(`Baik, kamu memilih ${media} ya, mohon tunggu sebentar...`, {
+        parse_mode: 'Markdown'
+    });
+
+
+    switch (media) {
+        case 'facebook':
+            await scrapeFacebook(ctx);
+            break;
+        case 'twitter':
+            await scrapeTwitter(ctx);
+            break;
+        case 'instagram':
+            await scrapeInstagram(ctx);
+            break;
+    }
+}
+
+async function scrapeFacebook(ctx: Context) {
+    await ctx.reply('Proses ini akan memakan waktu +- 5 menit');
+}
+
+async function scrapeTwitter(ctx: Context) {
+    await ctx.reply('Proses ini akan memakan waktu +- 5 menit');
+}
+
+async function scrapeInstagram(ctx: Context) {
+    await ctx.reply('Proses ini akan memakan waktu +- 5 menit');
 }
