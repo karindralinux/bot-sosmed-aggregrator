@@ -30,6 +30,19 @@ export function register(bot: Telegraf) {
             }
         });
 
+        bot.on('message', async (ctx) => {
+            await ctx.telegram.sendMessage(senderChatId, "Kamu yakin sudah benar?🧐", {
+                parse_mode: 'Markdown',
+                reply_markup: {
+                    resize_keyboard: true,
+                    inline_keyboard: [
+                        [{text: '👍 Sudah Benar', callback_data: 'SAVE'}],
+                        [{text: '📝 Edit Informasi', callback_data: 'EDIT'}]
+                    ]
+                }
+            });
+        })
+
         await ctx.telegram.sendMessage(senderChatId, `Di platform mana anda ingin mencari barang anda?`, {
             parse_mode: 'Markdown',
             reply_markup: {
@@ -41,6 +54,18 @@ export function register(bot: Telegraf) {
             }
         });
 
+    });
+
+    bot.action("SAVE", async (ctx: Context) => {
+        await ctx.reply(`_Tunggu Sebentar..._`, {
+            parse_mode: 'Markdown'
+        });
+    });
+
+    bot.action("EDIT", async (ctx: Context) => {
+        await ctx.reply(`_Silahkan edit dan kirim kembali informasi yang benar..._`, {
+            parse_mode: 'Markdown'
+        });
     });
 
     bot.action("facebook", async (ctx: Context) => {
