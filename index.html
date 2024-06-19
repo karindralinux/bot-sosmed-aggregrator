@@ -6,6 +6,26 @@
     <title>Got It</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.cdnfonts.com/css/google-sans" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+        }
+        input[type=number] {
+            margin: 5px 0;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .output {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 
 <body class="bg-[#111017] m-0 p-0 box-border">
@@ -85,6 +105,43 @@
         </div>
     </div>
 
+    <h1 class="text-white">Aplikasi Penghitung Tahun Kabisat</h1>
+    <form id="leapYearForm">
+        <label for="startYear">Tahun Awal: </label>
+        <input type="number" id="startYear" required><br>
+        <label for="endYear">Tahun Akhir: </label>
+        <input type="number" id="endYear" required><br>
+        <button type="submit">Submit</button>
+    </form>
+    <div class="output" id="output"></div>
+
+    <script>
+        // Fungsi untuk mengecek apakah sebuah tahun adalah tahun kabisat
+        function isLeapYear(year) {
+            return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+        }
+
+        document.getElementById('leapYearForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const startYear = parseInt(document.getElementById('startYear').value);
+            const endYear = parseInt(document.getElementById('endYear').value);
+            let leapYears = [];
+
+            for (let year = startYear; year <= endYear; year++) {
+                if (isLeapYear(year)) {
+                    leapYears.push(year);
+                }
+            }
+
+            const outputDiv = document.getElementById('output');
+            if (leapYears.length > 0) {
+                outputDiv.textContent = `Tahun kabisat antara ${startYear} dan ${endYear} adalah: ${leapYears.join(', ')}`;
+            } else {
+                outputDiv.textContent = `Tidak ada tahun kabisat antara ${startYear} dan ${endYear}.`;
+            }
+        });
+    </script>
 </body>
 </html> -->
  -->

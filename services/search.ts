@@ -20,7 +20,7 @@ export function register(bot: Telegraf) {
     });
 
     bot.action("ulang", async (ctx: Context) => {
-        await getLink(ctx);
+        await getEmptyLilnk(ctx);
     });
 
 
@@ -47,6 +47,7 @@ async function startScraping(ctx: Context, media: string) {
             await scrapeInstagram(ctx);
             break;
     }
+
 }
 
 async function scrapeFacebook(ctx: Context) {
@@ -60,6 +61,11 @@ async function scrapeTwitter(ctx: Context) {
 
 async function scrapeInstagram(ctx: Context) {
     await ctx.reply('Proses pencarian memakan waktu ⏳± 5 menit');
+}
+
+
+async function getEmptyLilnk(ctx: Context) {
+    await ctx.reply(`Maaf, link tidak tersedia, silahkan coba masukkan keyword lain`);
 }
 
 
