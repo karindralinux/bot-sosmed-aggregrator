@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!-- <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
@@ -13,16 +13,16 @@
         <div class="container mx-auto">
             
             <!-- Section 1: Navbar -->
-            <nav class="flex justify-center items-center gap-[70px] h-[126px] text-[#FFFFFFB2] font-['Product_Sans_Medium']">
+            <!-- <nav class="flex justify-center items-center gap-[70px] h-[126px] text-[#FFFFFFB2] font-['Product_Sans_Medium']">
                     <a href="#">Try Now</a>
                     <div>
                         <img src="./public/assets/logo.svg" alt="Logo">
                     </div>
                     <a href="#feature">Feature</a>
-            </nav>
+            </nav> -->
     
             <!-- Section 2: Hero -->
-            <div class="w-full gap-8 mb-[80px] flex justify-evenly max-h-[500px] overflow-hidden">
+            <!-- <div class="w-full gap-8 mb-[80px] flex justify-evenly max-h-[500px] overflow-hidden">
                 <div class="mt-[52px]">
                     <img src="./public/assets/hp3.png" alt="hpImage">
                 </div>
@@ -38,20 +38,20 @@
                     </p>
                     <button type="button" class="rounded-[14px] border-[2px] border-[solid] border-[#8E49B3] bg-[linear-gradient(180deg,_#B36ADA_0%,_#8E49B3_100%)] text-white flex px-[40px] py-[15px] justify-center items-center font-['Product_Sans_Medium']">Try Now</button>
                 </div>
-            </div>
+            </div> -->
             
     
             <!-- Section 3: Latar Belakang -->
-            <div class="w-full justify-items-center grid gap-8 mb-[80px]">
+            <!-- <div class="w-full justify-items-center grid gap-8 mb-[80px]">
                 <p class="text-center text-3xl mx-auto font-extrabold bg-gradient-to-b from-purple-200 to-white text-transparent bg-clip-text font-['Product_Sans_Medium']">Kenapa menggunakan Got It?</p>
                 <p class="text-white text-center text-sm max-w-2xl mx-auto opacity-50 font-['Product_Sans']">
                     Lorem ipsum, dolor sit amet consectetur adipisicing elit. Est vero, alias praesentium illo facere aperiam voluptate cupiditate voluptatum dolor ab minus quis facilis. Excepturi dolores voluptates cum perspiciatis quasi praesentium?
                 </p>
                 <img class="max-w-4xl mx-auto" src="./public/assets/feature.svg" alt="ilustrasi-cara-kerja">
-            </div>
+            </div> -->
 
             <!-- Section 4: Cara Kerja -->
-            <div class="w-full justify-items-center grid gap-8 mb-[80px] relative">
+            <!-- <div class="w-full justify-items-center grid gap-8 mb-[80px] relative">
                 <img class="absolute max-w-2xl z-0" src="./public/assets/bg-scraper.svg" alt="">
                 <p class="text-center text-3xl mx-auto font-extrabold bg-gradient-to-b from-purple-200 to-white text-transparent bg-clip-text font-['Product_Sans_Medium'] z-10">Bagaimana Kerjanya?</p>
                 <p class="text-white text-center text-sm max-w-2xl mx-auto opacity-50 font-['Product_Sans'] z-10">
@@ -59,20 +59,20 @@
                 </p>
                 <img class="max-w-xl mx-auto z-10" src="./public/assets/scraper-illustration.svg" alt="ilustrasi-cara-kerja">
             </div>
-    
+     -->
     
             <!-- Section 5: Fitur -->
-            <div id="feature" class="w-full justify-items-center grid gap-8 mb-[80px]">
+            <!-- <div id="feature" class="w-full justify-items-center grid gap-8 mb-[80px]">
                 <p class="text-center text-3xl mx-auto font-extrabold bg-gradient-to-b from-purple-200 to-white text-transparent bg-clip-text font-['Product_Sans_Medium'] z-10">Fitur Got It</p>
                 <p class="text-white text-center text-sm max-w-2xl mx-auto opacity-50 font-['Product_Sans'] z-10">
                     Got It memiliki fitur-fitur yang dapat membantu pengguna dalam menemukan barangnya yang hilang.
                 </p>
             </div>
         </div>   
-    </div>
+    </div> -->
 
     <!-- Section 6: Footer -->
-    <div class="bg-[#14141A] border-t border-[#21212B]">
+    <!-- <div class="bg-[#14141A] border-t border-[#21212B]">
         <div class="w-4/5 justify-items-center mx-auto py-10 inline-block flex flex-row items-center">
             <div class="grow">
                 <img src="./public/assets/logo-horizontal.svg" alt="ilustrasi-cara-kerja">
@@ -85,5 +85,57 @@
         </div>
     </div>
 
+</body>
+</html> -->
+ -->
+
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekend Finder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        button {
+            margin-top: 10px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background: #f4f4f4;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Weekend Finder</h1>
+    <form id="dateForm">
+        <label for="start_date">Start Date:</label>
+        <input type="date" id="start_date" required>
+        <label for="end_date">End Date:</label>
+        <input type="date" id="end_date" required>
+        <button type="submit">Submit</button>
+    </form>
+    <h2>Weekends:</h2>
+    <ul id="weekendList"></ul>
+    <script src="scripts/app.js"></script>
 </body>
 </html>
