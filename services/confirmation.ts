@@ -8,6 +8,20 @@ export function register(bot: Telegraf) {
         const userId = ctx.message?.from.id.toString() || '';
         const { state } = await getStateUser({ userId });
         const senderChatId: number = ctx.message?.chat.id || 0;
+        const message: any = ctx.message;
+        const information = message.text;
+
+        // console.log(information);
+        
+        const parse = information
+            .replace("Nama Lengkap: ", "@")
+            .replace("Lokasi Terakhir: ", "@")
+            .replace("Waktu Hilang(dd/mm/yyyy): ", "@")
+            .replace("\n \n"); 
+        // console.log(parse.split("@"));
+        console.log(parse);
+
+
 
         if (state == 1) {
 
