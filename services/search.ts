@@ -87,7 +87,7 @@ async function getLink(ctx: Context) {
 }
 
 const links: string[] = [
-    'https://www.facebook.com/photo/?fbid=993526008810150&set=a.818611916301561',
+    'https://www.facebook.com/groups/2791594781140264/permalink/3304675846498819/?mibextid=S66gvF',
     'https://www.facebook.com/photo/?fbid=993526008810150&set=a.818611916301562',
     'https://www.facebook.com/photo/?fbid=993526008810150&set=a.818611916301563',
     'https://www.facebook.com/photo/?fbid=993526008810150&set=a.818611916301564',

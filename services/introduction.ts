@@ -1,8 +1,18 @@
 import { Markup, Context, Telegraf } from "telegraf";
 import { Database } from "bun:sqlite";
 import { getStateUser, setThingTypeUser } from "../helpers/query";
+import db from "../db/init";
 
 export function register(bot: Telegraf) {
+
+    bot.command("start", async (ctx: Context) => {
+        const userId = ctx.message?.from.id.toString() || '';
+
+        await db`UPDATE users SET 
+        updated_at = ${new Date().toISOString()},
+        state = 0
+        WHERE telegram_user_id = ${userId};`;
+    })
 
     bot.command("mulai", async (ctx: Context) => {
 
