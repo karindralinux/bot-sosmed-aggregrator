@@ -1,5 +1,7 @@
 import type { Context, Telegraf } from "telegraf";
 import { getStateUser } from "../helpers/query";
+import { ScraperPlatform } from "../scraper/scraper";
+import { link } from "telegraf/format";
 
 export function register(bot: Telegraf) {
 
@@ -8,7 +10,7 @@ export function register(bot: Telegraf) {
     });
 
     bot.action("twitter", async (ctx: Context) => {
-        await startScraping(ctx, 'twitter');
+        await startScraping(ctx, 'x');
     });
 
     bot.action("instagram", async (ctx: Context) => {
@@ -35,19 +37,25 @@ async function startScraping(ctx: Context, media: string) {
         parse_mode: 'Markdown'
     });
 
+    await ctx.reply('Proses pencarian memakan waktu ⏳± 5 menit');
 
-    switch (media) {
-        case 'facebook':
-            await scrapeFacebook(ctx);
-            break;
-        case 'twitter':
-            await scrapeTwitter(ctx);
-            break;
-        case 'instagram':
-            await scrapeInstagram(ctx);
-            break;
-    }
+    console.log(`Facebook Email : `)
 
+    const scraper = new ScraperPlatform({
+        email: Bun.env.FACEBOOK_EMAIL || '',
+        password: Bun.env.FACEBOOK_PASSWORD || '',
+        platform: media,
+    });
+
+    const links = await scraper.search({
+        name: 'Gunardi',
+        thing_type: 'STNK',
+        estimated_lost_location: 'Karangrejo kec. Boyolangu ',
+        estimated_lost_time: '18-06-2024',
+        search_keyword: 'stnk hilang gunardi'
+    });
+
+    await ctx.reply('Berikut linknya : ' + links?.[0]);
 }
 
 async function scrapeFacebook(ctx: Context) {
@@ -62,8 +70,6 @@ async function scrapeTwitter(ctx: Context) {
 async function scrapeInstagram(ctx: Context) {
     await ctx.reply('Proses pencarian memakan waktu ⏳± 5 menit');
 }
-
-
 async function getEmptyLilnk(ctx: Context) {
     await ctx.reply(`Maaf, link tidak tersedia, silahkan coba masukkan keyword lain`);
 }
@@ -87,7 +93,7 @@ async function getLink(ctx: Context) {
 }
 
 const links: string[] = [
-    'https://www.facebook.com/groups/2791594781140264/permalink/3304675846498819/?mibextid=S66gvF',
+    'https://www.facebook.com/photo/?fbid=993526008810150&set=a.818611916301561',
     'https://www.facebook.com/photo/?fbid=993526008810150&set=a.818611916301562',
     'https://www.facebook.com/photo/?fbid=993526008810150&set=a.818611916301563',
     'https://www.facebook.com/photo/?fbid=993526008810150&set=a.818611916301564',

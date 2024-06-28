@@ -1,8 +1,9 @@
 import { chromium, devices } from "playwright-extra";
-import { listenNetworkRequests } from "../../helpers/listen-network-request";
-import type { Browser, Page } from "@playwright/test";
+import { listenNetworkRequests } from "../helpers/listen-network-request";
+import type { Browser, BrowserContext, Page } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import { extractTxtFromImg } from "./extract";
+import { QUERY_TYPE, type BaseScraperPayloadDto, type KeywordDto, type SearchScraperDto } from "./dto";
 
 export enum QueryFacebookType {
     GROUP = 'group',
@@ -16,13 +17,25 @@ export interface QueryFacebookDto {
     accountId?: string;
 }
 
+const groups = [
+    {
+        id: '276774466702481',
+        name: 'Media Informasi Kota Semarang',
+    },
+    {
+        id: '279402147597730',
+        name: 'MIK Semarang (Media Informasi Kota Semarang)'
+    }
+]
+
 
 export class FacebookScraper {
 
     private email: string;
     private password: string;
     private isLogin: boolean = false;
-    private page: any;
+    private browser: any;
+    private context: any;
 
     BASE_URL = `https://m.facebook.com`
 
@@ -30,21 +43,23 @@ export class FacebookScraper {
         login: `${this.BASE_URL}/login`
     }
 
-    constructor(email: string, password: string) {
-        this.email = email;
-        this.password = password;
+    constructor(data: BaseScraperPayloadDto) {
+        this.email = data.email;
+        this.password = data.password;
         this.isLogin = true;
     }
 
-    async initPage(): Promise<[Browser, Page]> {
+    async initBrowser() {
+        if (this.context) {
+            return
+        }
 
-        console.log(`Launch the browser...`)
-        const browser = await chromium.launch({ headless: true });
+        this.browser = await chromium.launch({ headless: true });
 
         // TODO : change browser type to mobile device
         // const pixel7 = devices['Pixel 7'];
 
-        const context = await browser.newContext({
+        this.context = await this.browser.newContext({
             screen: { width: 412, height: 915 },
             // viewport: { width: 412, height: 915 },
             // isMobile: true,
@@ -76,12 +91,17 @@ export class FacebookScraper {
             // ...pixel7
         });
 
+        return this.context;
+    }
+
+    async initPage(): Promise<Page> {
+
+        console.log(`Launch the browser...`)
+        await this.initBrowser();
 
         console.log('Open the new tab...')
 
-        const page = await context.newPage();
-
-        this.page = page
+        const page = await this.context.newPage();
 
         page.setDefaultTimeout(60 * 1000);
 
@@ -93,56 +113,65 @@ export class FacebookScraper {
 
         if (!this.isLogin) {
             await this.login()
+            this.isLogin = true
         }
 
-        return [browser, page];
+        return page;
     }
 
     async login() {
 
         try {
 
-            await this.initPage();
+            const page = await this.initPage();
 
             // Check is alteady login
 
-            if (this.page.url() === "https://web.facebok.com") {
+            if (page.url() === "https://web.facebok.com") {
                 this.isLogin = true;
                 return
             }
 
-            await this.page.getByPlaceholder('Email atau Nomor Telepon').fill(this.email)
-            await this.page.getByPlaceholder('Kata Sandi').fill(this.password)
+            await page.getByPlaceholder('Email atau Nomor Telepon').fill(this.email)
+            await page.getByPlaceholder('Kata Sandi').fill(this.password)
+
+            console.log(await page.content())
 
             console.log('Submit login form..')
 
             try {
 
-                this.page.getByRole('button', { name: 'Masuk' }).click();
-                this.page.waitForResponse('https://web.facebook.com', {
-                    timeout: 5000
+                await page.getByRole('button', { name: 'Masuk' }).click();
+                await page.waitForResponse('https://web.facebook.com', {
+                    timeout: 25000
                 })
 
                 this.isLogin = true
 
+                console.log(`Successfully Login Facebook..`)
+
                 return
 
             } catch (e) {
+                console.log(e)
 
-                if (this.page.url().includes('checkpoint')) {
+                console.log(`Error Login Facebook..`)
+
+
+                if (page.url().includes('checkpoint')) {
 
                     console.log('Autentikasi 2FA...')
 
                     console.log('Open Popup Resent 2FA Token...')
 
-                    await this.page.getByText('Tidak menerima kode?').click()
-                    await this.page.waitForLoadState();
-                    await this.page.waitForTimeout(2000)
+                    await page.getByText('Tidak menerima kode?').click()
+                    await page.waitForLoadState();
+                    await page.waitForTimeout(20000)
 
                     console.log('Resent 2FA Token...')
 
-                    await this.page.getByText('Kirimkan kode masuk lewat pesan teks').click()
-                    await this.page.getByTitle("Tutup").click()
+                    await page.getByText('Kirimkan kode masuk lewat pesan teks').click()
+                    await page.getByTitle("Tutup").click()
 
 
                     const prompt = "Input 2FA: ";
@@ -156,15 +185,15 @@ export class FacebookScraper {
 
                     console.log(`TwoFA Token : `, twoFAToken)
 
-                    await this.page.getByPlaceholder("Kode masuk").fill(twoFAToken)
+                    await page.getByPlaceholder("Kode masuk").fill(twoFAToken)
 
                     console.log(`Submitted TwoFA Token...`)
 
-                    await this.page.getByRole('button', { name: 'Kirim kode' }).click();
+                    await page.getByRole('button', { name: 'Kirim kode' }).click();
 
-                    await this.page.waitForURL('https://web.facebook.com/')
+                    await page.waitForURL('https://web.facebook.com/')
 
-                    console.log(`Homepage URL : `, this.page.url())
+                    console.log(`Homepage URL : `, page.url())
 
                     this.isLogin = true;
                     return
@@ -172,8 +201,8 @@ export class FacebookScraper {
 
             }
 
-            await this.page.goto('https://web.facebook.com/')
-            const data = await this.page.content()
+            await page.goto('https://web.facebook.com/')
+            const data = await page.content()
 
             return new Response(data).body
 
@@ -189,32 +218,62 @@ export class FacebookScraper {
         }
     }
 
-    async search(data: QueryFacebookDto) {
+    async search(data: SearchScraperDto) {
 
-        const [browser, page] = await this.initPage()
+        console.log(`Preparing scrape on facebook..`);
 
-        console.log(`Preparing search on facebook..`)
+        let result: string[] = [];
 
-        let url = this.BASE_URL
-
-        switch (data.type) {
-            case QueryFacebookType.ACCOUNT:
-                // url += 
+        switch (data.search.type) {
+            case QUERY_TYPE.GROUP:
+                result = await this.scrapeByGroup(data.keyword);
                 break;
-            case QueryFacebookType.GROUP:
-                url += `/groups/${data.accountId}`
+            case QUERY_TYPE.SEARCH_PAGE:
+                // result = await this.scrapeBySearch(data.keyword)
                 break;
-            case QueryFacebookType.SEARCH_PAGE:
-                url += `/search/posts/?q=${data.query}`
-                break;
-            default:
-                throw Error('Query Type Not Found');
         }
+
+        console.log(`Result : `, result);
+        console.log(`Finished scrape on twitter..`);
+        this.browser.close();
+        return result
+    }
+
+    async scrapeByGroup(keyword: KeywordDto) {
+
+        const urls = groups.map((group) => `${this.BASE_URL}/groups/${group.id}`)
+
+        const results = await Promise.allSettled(urls.map((url: string) => {
+            return this.scrape(url, keyword)
+        }))
+
+        const formattedResult: string[] = []
+
+        results.forEach((res) => {
+            if (res.status === 'fulfilled') {
+                formattedResult.push(...res.value);
+            }
+        })
+
+        return formattedResult;
+    }
+
+    async scrapeBySearch(keyword: KeywordDto) {
+
+        const url = `${this.BASE_URL}/search/top?q=${keyword.thing_type}%20hilang%20ditemukan`
+        const results = await this.scrape(url, keyword);
+
+        return results
+    }
+
+    async scrape(url: string, keyword: KeywordDto) {
+
+        const page = await this.initPage()
 
         console.log(`Goto : ${url}`)
 
         await page.goto(url)
-        
+
         console.log(`Wait Load State..`)
         await page.waitForLoadState()
 
@@ -225,7 +284,7 @@ export class FacebookScraper {
 
         const btn = await page.getByRole("button").all()
         console.log(`Buttons : `, btn)
-        console.log(`Total Button  : `,btn.length)
+        console.log(`Total Button  : `, btn.length)
 
         await page.getByRole("dialog").getByLabel('Tutup').click()
         await page.waitForLoadState("domcontentloaded")
@@ -244,12 +303,17 @@ export class FacebookScraper {
 
         console.log(`Preparing search on facebook..`)
 
+        const feed = await page.getByRole("feed").textContent()
+
+        console.log(feed)
+
         const response: string[] = [];
 
         for (let i = 0; i < 5; i++) {
-            let currentId = i + 1;
+            const currentId = i + 1;
+            const timestamp = new Date().getTime()
 
-            console.log(`Load post ${currentId}..`)
+            console.log(`Load post ${currentId}-${timestamp}..`)
 
 
             await page.waitForLoadState("domcontentloaded")
@@ -267,20 +331,20 @@ export class FacebookScraper {
 
             console.log(`Screenshotinging Page : ${currentId}...`,)
 
-            let nth = currentId === 1 ? 0 : currentId + 5
+            const nth = currentId === 1 ? 0 : currentId + 5
 
             const imgBuffer = await page.getByRole('article')
                 .nth(nth)
-                .screenshot({ path: `./screenshots/screenshot${currentId}.png` });
+                .screenshot({ path: `./screenshots/screenshot${currentId}-${timestamp}.png` });
 
             const data = await extractTxtFromImg(imgBuffer)
+            
+            console.log(`Data : `, data)
 
-            response.push(data)
+            // if (data.includes(keyword.name) || data.includes(keyword.thing_type) || data.includes(keyword.estimated_lost_location)) {
+                response.push(data)
+            // }
         }
-
-        console.log('Closing the browser..')
-
-        await browser.close()
 
         return response
     }

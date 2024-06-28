@@ -5,6 +5,8 @@ import * as things from "./services/things";
 import * as confirmation from "./services/confirmation";
 import * as search from "./services/search";
 import db from "./db/init";
+import { FacebookScraper } from "./scraper/facebook";
+import { QUERY_TYPE } from "./scraper/dto";
 
 const PORT = Number(Bun.env.PORT) || 3000;
 const BOT_TOKEN = Bun.env.BOT_TOKEN || '';
@@ -17,6 +19,26 @@ const server = Bun.serve({
         const url = new URL(req.url);
 
         if (url.pathname === 'health-check') return new Response('Hello World')
+
+        if (url.pathname === "scrape-facebook") {
+            const scraper = new FacebookScraper({ email: Bun.env.FACEBOOK_EMAIL || '', password: Bun.env.FACEBOOK_PASSWORD || '' });
+            const data = await scraper.search({
+                keyword: {
+                    name: 'Gunardi',
+                    thing_type: 'STNK',
+                    estimated_lost_location: 'Karangrejo kec. Boyolangu ',
+                    estimated_lost_time: '2024-06-18',
+                    search_keyword: 'stnk hilang gunardi'
+                },
+                search: {
+                    type: QUERY_TYPE.GROUP
+                }
+            });
+
+            return Response.json({
+                data
+            })
+        }
 
         const file = Bun.file(import.meta.dir + '/public' + (url.pathname == '/' ? '/index.html' : url.pathname))
         const isExists = await file.exists()

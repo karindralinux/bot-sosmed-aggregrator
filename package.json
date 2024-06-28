@@ -7,15 +7,20 @@
     "build": "bun build ./index.ts --outdir ./dist"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@playwright/test": "^1.45.0",
+    "@types/bun": "latest",
+    "@types/lodash": "^4.17.5"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@playwright/test": "^1.43.1",
+    "chalk": "^5.3.0",
+    "dayjs": "^1.11.11",
+    "lodash": "^4.17.21",
     "playwright-extra": "^4.3.6",
     "postgres": "^3.4.4",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "telegraf": "^4.16.3",
     "tesseract.js": "^5.0.5"
   }
