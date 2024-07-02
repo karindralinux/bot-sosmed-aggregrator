@@ -1,4 +1,4 @@
-# pencari-barang-sosmed-aggregrator
+# Bot Sosmed Agregator
 
 To install dependencies:
 
